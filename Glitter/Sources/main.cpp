@@ -5,6 +5,9 @@
 // System Headers
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Standard Headers
 #include <cstdio>
@@ -173,6 +176,20 @@ int main()
     // or set it via the texture class
     ourShader.setInt("texture2", 1);
     
+    // translate
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    glm::mat4 trans = glm::mat4(1.0f);
+    // glm:: translate rotate scale
+//    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+//    vec = trans * vec;
+    trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    std::cout << vec.x << vec.y << vec.z << std::endl;
+    
+    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+    
+    
     
     
     // render loop
@@ -196,6 +213,14 @@ int main()
         
         // set the texture min value in the shader
         ourShader.setFloat("mixValue", mixValue);
+        
+        // create transformations 
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+        trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+        
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
         
         // render container
         ourShader.use();
